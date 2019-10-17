@@ -4,6 +4,7 @@
 -- 1. Add Superman's hometown, Smallville, Kansas to the city table. The
 -- countrycode is 'USA', and population of 45001. (Yes, I looked it up on
 -- Wikipedia.)
+
 Select * from city
 INSERT city
 (name, countrycode, district, population)
@@ -13,12 +14,14 @@ VALUES('Smallville', 'USA', 'Kansas', 45001)
 -- percentage of the 'USA' population.
 --Select * from countrylanguage
 --where language = 'kryptonese'
+
 INSERT countrylanguage
 (countrycode, language, isofficial, percentage)
 Values('USA', 'Kryptonese', 0, 0.0001)
 
 -- 3. After heated debate, "Kryptonese" was renamed to "Krypto-babble", change
 -- the appropriate record accordingly.
+
 UPDATE countrylanguage
 SET language = 'Krypto-babble'
 Where language = 'Kryptonese'
@@ -62,23 +65,42 @@ Where name = 'Smallville'
 -- (590 rows affected)
 BEGIN Transaction
 
-Select * From countrylanguage cl
-JOIN country c ON cl.countrycode = c.code
-where c.indepyear >= 1800 AND c.indepyear <=1972 AND isofficial = 0
+
 update countrylanguage
 set isofficial =
 case isofficial
 when 1 then 0
 when 0 then 1
 end
+FROM country c
+JOIN countrylanguage cl ON cl.countrycode = c.code
+where c.indepyear >= 1800 AND c.indepyear <= 1972
 
-Commit;
+Commit 
 
 -- 9. Convert population so it is expressed in 1,000s for all cities. (Round to
 -- the nearest integer value greater than 0.)
 -- (4079 rows affected)
 
+SELECT * FROM city
+UPDATE city 
+SET population = Round(population/1000, -1)
+WHERE population > 0
+
+
+
 -- 10. Assuming a country's surfacearea is expressed in square miles, convert it to
 -- square meters for all countries where French is spoken by more than 20% of the
 -- population.
 -- (7 rows affected)
+
+
+--UPDATE country
+--SET surfacearea = (surfacearea/0.00000038610)
+--WHERE surfacearea > 0
+SELECT * FROM countrylanguage cl
+JOIN country c ON cl.countrycode = c.code
+WHERE cl.language = 'French' AND cl.percentage > 20.00
+UPDATE country
+SET surfacearea = (surfacearea/0.00000038610)
+WHERE surfacearea > 0
